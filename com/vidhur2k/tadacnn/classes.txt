@@ -1,0 +1,11 @@
+bread
+dairy_product
+dessert
+egg
+fried_food
+meat
+noodles_pasta
+rice
+seafood
+soup
+veggie_fruit
