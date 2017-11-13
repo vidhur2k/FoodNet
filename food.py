@@ -91,7 +91,7 @@ model = Sequential()
 
 # Adding the first convolution layer.
 model.add(
-    Conv2D(8,   # Number of kernels.
+    Conv2D(32,   # Number of kernels.
            (5, 5),  # Kernel size.
            input_shape=(32, 32, 3),
            padding='same',
@@ -152,3 +152,17 @@ scores = model.evaluate(
 )
 
 print('\nAccuracy: %.2f%%' % (scores[1] * 100))
+
+# Visualization module provided by Keras.
+from keras.utils import plot_model
+
+
+# # Plotting the final model
+# plot_model(
+#     model,
+#     to_file='model1.png',
+# )
+
+model.save('my_model1.h5')
+model.save_weights('my_model1_weights.h5')
+print('Saved model to disk.')
