@@ -1,3 +1,8 @@
+"""
+Author: Vidhur Kumar (kumar289@purdue.edu)
+
+"""
+
 import os
 from os import listdir
 
@@ -116,7 +121,7 @@ model.add(
     )
 )
 
-epochs = 1
+epochs = 99
 batch_size = 100
 l_rate = 0.001
 
@@ -166,7 +171,3 @@ from keras.utils import plot_model
 model.save('my_model1.h5')
 model.save_weights('my_model1_weights.h5')
 print('Saved model to disk.')
-
-from keras.utils import plot_model
-plot_model(model, to_file='model.png')
-
