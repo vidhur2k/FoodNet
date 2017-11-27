@@ -1,5 +1,15 @@
 import os
 from os import listdir
+from keras.utils import np_utils
+from keras.models import Sequential
+from keras.optimizers import SGD
+from keras.layers import Dense
+from keras.layers import Dropout
+from keras.layers import Flatten
+from keras.layers.convolutional import Conv2D, MaxPooling2D
+import h5py
+import numpy as np
+from scipy.misc import imresize, imread
 
 # Two dictionaries to save the classes and their respective indices.
 index_to_classes = {}
@@ -11,10 +21,6 @@ with open('assets/classes.txt', 'r') as txt:
     classes_to_index = dict(zip(classes, range(len(classes))))
     index_to_classes = dict(zip(range(len(classes)), classes))
 
-import matplotlib.pyplot as plt
-import matplotlib.image as img
-import numpy as np
-from scipy.misc import imresize, imread
 
 TRAINING_DIR = 'assets/training/'
 VALIDATION_DIR = 'assets/validation/'
@@ -53,16 +59,6 @@ X_test, Y_test = load_images(EVALUATION_DIR)
 # print('Y_val shape' + str(Y_val.shape))
 # print('X_test shape' + str(X_test.shape))
 # print('Y_test shape' + str(Y_test.shape))
-
-import keras
-from keras.utils import np_utils
-from keras.models import Sequential
-from keras.optimizers import SGD
-from keras.layers import Dense
-from keras.layers import Dropout
-from keras.layers import Flatten
-from keras.layers.convolutional import Conv2D, MaxPooling2D
-import h5py
 
 # Normalizing the inputs from 0-255 to 0.0-1.0.
 X_tr = X_tr.astype('float32')
@@ -106,6 +102,14 @@ model.add(
 )
 
 model.add(
+    Conv2D(64,
+           (5, 5),
+           input_shape=(16, 16, 32),
+           padding='same',
+           activation='relu')
+)
+
+model.add(
     Flatten()
 )
 
@@ -116,7 +120,7 @@ model.add(
     )
 )
 
-epochs = 1
+epochs = 200
 batch_size = 100
 l_rate = 0.001
 
@@ -163,10 +167,33 @@ from keras.utils import plot_model
 #     to_file='model1.png',
 # )
 
+model_json = model.to_json()
+
+with open('model1.json', 'w') as json_file:
+    json_file.write(model_json)
+
 model.save('my_model1.h5')
-model.save_weights('my_model1_weights.h5')
+model.save_weights('model1_weights.h5')
 print('Saved model to disk.')
 
-from keras.utils import plot_model
-plot_model(model, to_file='model.png')
+from keras.models import model_from_json
 
+json_file = open('model1.json', 'r')
+
+loaded_model_json = json_file.read()
+json_file.close()
+
+loaded_model = model_from_json(loaded_model_json)
+loaded_model.load_weights('model1_weights.h5')
+print('Loaded model from disk')
+
+loaded_model.compile(
+    loss='categorical_crossentropy',
+    optimizer=sgd,
+    metrics=['accuracy']
+)
+
+score = loaded_model.evaluate(X_test, Y_test, verbose=1)
+
+
+print("%s: %.2f%%" % (loaded_model.metrics_names[1], score[1]*100))
